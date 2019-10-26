@@ -1,7 +1,11 @@
 import Reactotron from 'reactotron-react-native';
 
 if (__DEV__) {
-  const tron = Reactotron.configure()
+  const tron = Reactotron.configure({
+    host: 'localhost',
+    enabled: true,
+    port: 9090,
+  })
     .useReactNative()
     .connect();
 
