@@ -74,3 +74,10 @@ export const Author = styled.Text`
   color: 3666;
   margin-top: 2px;
 `;
+
+export const LoadingStars = styled.View`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+`;
