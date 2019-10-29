@@ -34,6 +34,7 @@ export default class User extends Component {
     loading: false,
     page: 1,
     endPages: false,
+    refreshing: false,
   };
 
   async componentDidMount() {
@@ -58,7 +59,8 @@ export default class User extends Component {
       return;
     }
 
-    const { page, stars } = this.state;
+    // const { page, stars } = this.state;
+    const { page } = this.state;
     const { navigation } = this.props;
     const user = navigation.getParam('user');
 
@@ -68,7 +70,8 @@ export default class User extends Component {
 
     if (response.data.length > 0) {
       this.setState({
-        stars: [...stars, ...response.data],
+        // stars: [...stars, ...response.data],
+        stars: response.data,
         loading: false,
         page: page + 1,
       });
@@ -78,6 +81,27 @@ export default class User extends Component {
         endPage: true,
       });
     }
+  };
+
+  refreshList = async () => {
+    this.setState({
+      loading: true,
+      refreshing: true,
+    });
+
+    // const { page, stars } = this.state;
+    const { navigation } = this.props;
+    const user = navigation.getParam('user');
+
+    const response = await api.get(`/users/${user.login}/starred?page=1`);
+
+    this.setState({
+      stars: response.data,
+      loading: false,
+      page: 1,
+      endPage: false,
+      refreshing: false,
+    });
   };
 
   render() {
@@ -102,6 +126,8 @@ export default class User extends Component {
             data={stars}
             onEndReachedThreshold={0.2} // Carrega mais itens quando chegar em 20% do fim
             onEndReached={this.loadMore} // Função que carrega mais itens
+            onRefresh={this.refreshList} // Função dispara quando o usuário arrasta a lista pra baixo
+            refreshing={this.state.refreshing} // Variável que armazena um estado true/false que representa se a lista está atualizando
             keyExtractor={star => String(star.id)}
             renderItem={({ item }) => (
               <Starred>
