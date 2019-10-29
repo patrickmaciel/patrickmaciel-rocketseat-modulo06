@@ -106,7 +106,7 @@ export default class User extends Component {
 
   render() {
     const { navigation } = this.props;
-    const { stars, loading } = this.state;
+    const { stars, loading, refreshing } = this.state;
     const user = navigation.getParam('user');
 
     return (
@@ -127,7 +127,7 @@ export default class User extends Component {
             onEndReachedThreshold={0.2} // Carrega mais itens quando chegar em 20% do fim
             onEndReached={this.loadMore} // Função que carrega mais itens
             onRefresh={this.refreshList} // Função dispara quando o usuário arrasta a lista pra baixo
-            refreshing={this.state.refreshing} // Variável que armazena um estado true/false que representa se a lista está atualizando
+            refreshing={refreshing} // Variável que armazena um estado true/false que representa se a lista está atualizando
             keyExtractor={star => String(star.id)}
             renderItem={({ item }) => (
               <Starred>
