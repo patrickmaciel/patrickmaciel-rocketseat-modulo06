@@ -26,6 +26,7 @@ export default class User extends Component {
   static propTypes = {
     navigation: PropTypes.shape({
       getParam: PropTypes.func,
+      navigate: PropTypes.func,
     }).isRequired,
   };
 
@@ -33,7 +34,7 @@ export default class User extends Component {
     stars: [],
     loading: false,
     page: 1,
-    endPages: false,
+    endPage: false,
     refreshing: false,
   };
 
@@ -104,6 +105,13 @@ export default class User extends Component {
     });
   };
 
+  handleNavigate = starred => {
+    console.tron.log('clicou');
+    const { navigation } = this.props;
+
+    navigation.navigate('Repository', { starred });
+  };
+
   render() {
     const { navigation } = this.props;
     const { stars, loading, refreshing } = this.state;
@@ -133,7 +141,9 @@ export default class User extends Component {
               <Starred>
                 <OwnerAvatar source={{ uri: item.owner.avatar_url }} />
                 <Info>
-                  <Title>{item.name}</Title>
+                  <Title onPress={() => this.handleNavigate(item)}>
+                    {item.name}
+                  </Title>
                   <Author>{item.owner.login}</Author>
                 </Info>
               </Starred>
