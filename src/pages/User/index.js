@@ -15,6 +15,7 @@ import {
   Info,
   Title,
   Author,
+  LoadingStars,
 } from './styles';
 
 export default class User extends Component {
@@ -31,21 +32,53 @@ export default class User extends Component {
   state = {
     stars: [],
     loading: false,
+    page: 1,
+    endPages: false,
   };
 
   async componentDidMount() {
     this.setState({ loading: true });
 
     const { navigation } = this.props;
+    const { page } = this.state;
     const user = navigation.getParam('user');
 
-    const response = await api.get(`/users/${user.login}/starred`);
+    const response = await api.get(`/users/${user.login}/starred?page=${page}`);
 
     this.setState({
       stars: response.data,
       loading: false,
     });
   }
+
+  loadMore = async () => {
+    this.setState({ loading: true });
+    const { endPage } = this.state;
+    if (endPage) {
+      return;
+    }
+
+    const { page, stars } = this.state;
+    const { navigation } = this.props;
+    const user = navigation.getParam('user');
+
+    const response = await api.get(
+      `/users/${user.login}/starred?page=${page + 1}`
+    );
+
+    if (response.data.length > 0) {
+      this.setState({
+        stars: [...stars, ...response.data],
+        loading: false,
+        page: page + 1,
+      });
+    } else {
+      this.setState({
+        loading: false,
+        endPage: true,
+      });
+    }
+  };
 
   render() {
     const { navigation } = this.props;
@@ -61,10 +94,14 @@ export default class User extends Component {
         </Header>
 
         {loading ? (
-          <ActivityIndicator color="#7159c1" />
+          <LoadingStars>
+            <ActivityIndicator color="#7159c1" />
+          </LoadingStars>
         ) : (
           <Stars
             data={stars}
+            onEndReachedThreshold={0.2} // Carrega mais itens quando chegar em 20% do fim
+            onEndReached={this.loadMore} // Função que carrega mais itens
             keyExtractor={star => String(star.id)}
             renderItem={({ item }) => (
               <Starred>
